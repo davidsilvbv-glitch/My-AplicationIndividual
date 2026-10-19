@@ -6,5 +6,9 @@ data class StarWarsCharacter(
     val height: String,
     val mass: String,
     val gender: String,
-    val birthYear: String
+    val birthYear: String,
+    val hairColor: String,
+    val eyeColor: String,
+    val skinColor: String,
+    val imageUrl: String
 )

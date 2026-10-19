@@ -18,7 +18,10 @@ data class SwapiPropertiesDto(
     @SerializedName("height") val height: String? = null,
     @SerializedName("mass") val mass: String? = null,
     @SerializedName("gender") val gender: String? = null,
-    @SerializedName("birth_year") val birthYear: String? = null
+    @SerializedName("birth_year") val birthYear: String? = null,
+    @SerializedName("hair_color") val hairColor: String? = null,
+    @SerializedName("eye_color") val eyeColor: String? = null,
+    @SerializedName("skin_color") val skinColor: String? = null
 )
 
 data class SwapiPeopleListResponseDto(

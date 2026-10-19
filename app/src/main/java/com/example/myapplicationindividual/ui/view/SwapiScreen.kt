@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -22,10 +24,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.myapplicationindividual.domain.model.StarWarsCharacter
 import com.example.myapplicationindividual.ui.viewmodel.SwapiViewModel
 
@@ -76,6 +81,17 @@ fun SwapiScreen(
                 } else {
                     val character: StarWarsCharacter? = uiState.character
                     if (character != null) {
+                        if (character.imageUrl.isNotEmpty()) {
+                            AsyncImage(
+                                model = character.imageUrl,
+                                contentDescription = character.name,
+                                modifier = Modifier
+                                    .size(160.dp)
+                                    .clip(RoundedCornerShape(12.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+
                         Text(
                             text = character.name,
                             fontSize = 22.sp,
@@ -91,6 +107,9 @@ fun SwapiScreen(
                             DetailItem(label = "Peso", value = "${character.mass} kg")
                             DetailItem(label = "Género", value = character.gender)
                             DetailItem(label = "Año de Nacimiento", value = character.birthYear)
+                            DetailItem(label = "Color de Pelo", value = character.hairColor)
+                            DetailItem(label = "Color de Ojos", value = character.eyeColor)
+                            DetailItem(label = "Color de Piel", value = character.skinColor)
                         }
                     }
                 }

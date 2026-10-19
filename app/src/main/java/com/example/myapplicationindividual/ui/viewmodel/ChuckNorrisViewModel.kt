@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 data class ChuckNorrisUiState(
     val isLoading: Boolean = false,
     val fact: ChuckNorrisFact? = null,
+    val categories: List<String> = emptyList(),
+    val selectedCategory: String? = null,
     val errorMessage: String? = null
 )
 
@@ -23,17 +25,32 @@ class ChuckNorrisViewModel(
     val uiState: StateFlow<ChuckNorrisUiState> = _uiState.asStateFlow()
 
     init {
+        loadCategories()
+        loadRandomFact()
+    }
+
+    fun loadCategories() {
+        viewModelScope.launch {
+            val result = repository.getCategories()
+            result.onSuccess { categories ->
+                _uiState.value = _uiState.value.copy(categories = categories)
+            }
+        }
+    }
+
+    fun selectCategory(category: String?) {
+        _uiState.value = _uiState.value.copy(selectedCategory = category)
         loadRandomFact()
     }
 
     fun loadRandomFact() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
-            val result = repository.getRandomFact()
+            val result = repository.getRandomFact(_uiState.value.selectedCategory)
             result.onSuccess { fact ->
-                _uiState.value = ChuckNorrisUiState(isLoading = false, fact = fact)
+                _uiState.value = _uiState.value.copy(isLoading = false, fact = fact)
             }.onFailure { error ->
-                _uiState.value = ChuckNorrisUiState(
+                _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = error.localizedMessage ?: "Error al cargar dato de Chuck Norris."
                 )
