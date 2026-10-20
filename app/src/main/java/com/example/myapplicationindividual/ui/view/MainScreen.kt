@@ -17,7 +17,8 @@ import androidx.compose.ui.Modifier
 enum class ApiTab(val title: String) {
     CHUCK_NORRIS("Chuck Norris"),
     STAR_WARS("Star Wars"),
-    MARVEL("Marvel")
+    MARVEL("Marvel"),
+    FAVORITES("Favoritos")
 }
 
 @Composable
@@ -48,6 +49,7 @@ fun MainScreen() {
                 0 -> ChuckNorrisScreen()
                 1 -> SwapiScreen()
                 2 -> MarvelScreen()
+                3 -> StarWarsFavoritesScreen()
             }
         }
     }

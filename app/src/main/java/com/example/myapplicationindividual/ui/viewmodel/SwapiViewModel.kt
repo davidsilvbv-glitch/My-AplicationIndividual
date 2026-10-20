@@ -1,27 +1,52 @@
 package com.example.myapplicationindividual.ui.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplicationindividual.data.local.AppDatabase
+import com.example.myapplicationindividual.data.repository.StarWarsFavoriteRepository
 import com.example.myapplicationindividual.data.repository.SwapiRepository
 import com.example.myapplicationindividual.domain.model.StarWarsCharacter
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class SwapiUiState(
     val isLoading: Boolean = false,
     val character: StarWarsCharacter? = null,
     val currentId: Int = 1,
+    val isFavorite: Boolean = false,
+    val favoriteIds: List<String> = emptyList(),
     val errorMessage: String? = null
 )
 
 class SwapiViewModel(
-    private val repository: SwapiRepository = SwapiRepository()
-) : ViewModel() {
+    application: Application
+) : AndroidViewModel(application) {
 
-    private val _uiState = MutableStateFlow(SwapiUiState())
-    val uiState: StateFlow<SwapiUiState> = _uiState.asStateFlow()
+    private val db = AppDatabase.getInstance(application)
+    private val repository = SwapiRepository(db.starWarsCacheDao())
+    private val favoriteRepository = StarWarsFavoriteRepository(db.starWarsFavoriteDao())
+
+    private val _characterState = MutableStateFlow(SwapiUiState())
+
+    val uiState: StateFlow<SwapiUiState> = combine(
+        _characterState,
+        favoriteRepository.observeFavoriteIds()
+    ) { state, favIds ->
+        val isFav = state.character?.id in favIds
+        state.copy(
+            isFavorite = isFav,
+            favoriteIds = favIds
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = SwapiUiState()
+    )
 
     init {
         loadCharacter(1)
@@ -29,16 +54,16 @@ class SwapiViewModel(
 
     fun loadCharacter(id: Int) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null, currentId = id)
+            _characterState.value = _characterState.value.copy(isLoading = true, errorMessage = null, currentId = id)
             val result = repository.getCharacter(id)
             result.onSuccess { character ->
-                _uiState.value = _uiState.value.copy(
+                _characterState.value = _characterState.value.copy(
                     isLoading = false,
                     character = character,
                     errorMessage = null
                 )
             }.onFailure { error ->
-                _uiState.value = _uiState.value.copy(
+                _characterState.value = _characterState.value.copy(
                     isLoading = false,
                     errorMessage = error.localizedMessage ?: "No se pudo obtener información del personaje $id."
                 )
@@ -46,13 +71,21 @@ class SwapiViewModel(
         }
     }
 
+    fun toggleFavorite() {
+        val currentCharacter = uiState.value.character ?: return
+        val isFav = uiState.value.isFavorite
+        viewModelScope.launch {
+            favoriteRepository.toggleFavorite(currentCharacter, isFav)
+        }
+    }
+
     fun loadNextCharacter() {
-        val nextId = _uiState.value.currentId + 1
+        val nextId = _characterState.value.currentId + 1
         loadCharacter(nextId)
     }
 
     fun loadPreviousCharacter() {
-        val current = _uiState.value.currentId
+        val current = _characterState.value.currentId
         if (current > 1) {
             loadCharacter(current - 1)
         }
