@@ -18,7 +18,8 @@ enum class ApiTab(val title: String) {
     CHUCK_NORRIS("Chuck Norris"),
     STAR_WARS("Star Wars"),
     MARVEL("Marvel"),
-    FAVORITES("Favoritos")
+    FAVORITES("Favoritos"),
+    SQLITE_CLOUD("SQLite Cloud")
 }
 
 @Composable
@@ -50,6 +51,7 @@ fun MainScreen() {
                 1 -> SwapiScreen()
                 2 -> MarvelScreen()
                 3 -> StarWarsFavoritesScreen()
+                4 -> SQLiteAiScreen()
             }
         }
     }

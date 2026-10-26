@@ -28,4 +28,12 @@ object RetrofitClient {
             .build()
             .create(MarvelApiService::class.java)
     }
+
+    val sqliteAiApi: SQLiteAiApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://www.sqlite.ai/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(SQLiteAiApiService::class.java)
+    }
 }
