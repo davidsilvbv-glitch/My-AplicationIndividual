@@ -5,6 +5,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
+    const val DEFAULT_SQLITE_CLOUD_API_KEY = "orgkey_e2e34bce68398edb0726aa60ea549bd24da0355a184108ed727bfcedbb222a0a"
+
     val chuckNorrisApi: ChuckNorrisApiService by lazy {
         Retrofit.Builder()
             .baseUrl("https://api.chucknorris.io/")
@@ -31,7 +33,7 @@ object RetrofitClient {
 
     val sqliteAiApi: SQLiteAiApiService by lazy {
         Retrofit.Builder()
-            .baseUrl("https://www.sqlite.ai/")
+            .baseUrl("https://cguy666cdk.sqlite.cloud/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(SQLiteAiApiService::class.java)

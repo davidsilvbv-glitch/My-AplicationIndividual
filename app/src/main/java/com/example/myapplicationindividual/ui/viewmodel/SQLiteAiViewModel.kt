@@ -2,6 +2,7 @@ package com.example.myapplicationindividual.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplicationindividual.data.network.RetrofitClient
 import com.example.myapplicationindividual.data.repository.SQLiteAiRepository
 import com.example.myapplicationindividual.domain.model.CloudDatabaseItem
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,7 @@ class SQLiteAiViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    private val _apiKey = MutableStateFlow("")
+    private val _apiKey = MutableStateFlow(RetrofitClient.DEFAULT_SQLITE_CLOUD_API_KEY)
     val apiKey: StateFlow<String> = _apiKey.asStateFlow()
 
     init {
