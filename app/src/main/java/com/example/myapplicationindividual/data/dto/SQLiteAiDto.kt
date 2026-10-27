@@ -9,8 +9,10 @@ data class SQLiteAiQueryResponseDto(
 )
 
 data class SQLiteAiRowDto(
+    @SerializedName("AlbumId") val albumId: Int? = null,
+    @SerializedName("Title") val title: String? = null,
+    @SerializedName("ArtistId") val artistId: Int? = null,
     @SerializedName("id") val id: String? = null,
-    @SerializedName("title") val title: String? = null,
     @SerializedName("description") val description: String? = null,
     @SerializedName("created_at") val createdAt: String? = null
 )

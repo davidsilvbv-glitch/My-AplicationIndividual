@@ -10,6 +10,6 @@ interface SQLiteAiApiService {
     @GET("v1/webrequest")
     suspend fun getQueryResults(
         @Header("Authorization") token: String,
-        @Query("sql") sqlQuery: String = "SELECT * FROM chinook.sqlite;"
+        @Query("sql") sqlQuery: String = "SELECT * FROM albums;"
     ): SQLiteAiQueryResponseDto
 }
