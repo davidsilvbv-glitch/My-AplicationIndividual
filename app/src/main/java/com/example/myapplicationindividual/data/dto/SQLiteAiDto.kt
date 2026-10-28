@@ -5,7 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class SQLiteAiQueryResponseDto(
     @SerializedName("status") val status: String? = null,
     @SerializedName("data") val data: List<SQLiteAiRowDto>? = null,
-    @SerializedName("message") val message: String? = null
+    @SerializedName("message") val message: String? = null,
+    @SerializedName("error") val error: String? = null
 )
 
 data class SQLiteAiRowDto(
@@ -14,4 +15,9 @@ data class SQLiteAiRowDto(
     @SerializedName("title") val title: String? = null,
     @SerializedName("description") val description: String? = null,
     @SerializedName("image_url") val imageUrl: String? = null
+)
+
+data class SQLiteAiRequestDto(
+    @SerializedName("sql") val sql: String,
+    @SerializedName("database") val database: String
 )

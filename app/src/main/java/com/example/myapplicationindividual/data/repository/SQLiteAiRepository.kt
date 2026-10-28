@@ -1,5 +1,6 @@
 package com.example.myapplicationindividual.data.repository
 
+import com.example.myapplicationindividual.data.dto.SQLiteAiRequestDto
 import com.example.myapplicationindividual.data.mapper.SQLiteAiMapper
 import com.example.myapplicationindividual.data.network.RetrofitClient
 import com.example.myapplicationindividual.data.network.SQLiteAiApiService
@@ -11,8 +12,11 @@ class SQLiteAiRepository(
     suspend fun getCloudItems(apiKey: String): Result<List<CloudDatabaseItem>> {
         return runCatching {
             val tokenHeader = if (apiKey.startsWith("Bearer ")) apiKey else "Bearer $apiKey"
-            // Consultando la tabla de favoritos/personajes de Star Wars y Marvel en la nube
-            val response = apiService.getQueryResults(tokenHeader, "SELECT * FROM favorites;")
+            val requestBody = SQLiteAiRequestDto(
+                sql = "SELECT * FROM favorites;",
+                database = "myapplicationIndividualDB"
+            )
+            val response = apiService.executeQuery(tokenHeader, requestBody)
             val dtoList = response.data ?: emptyList()
             dtoList.map { SQLiteAiMapper.toDomain(it) }
         }

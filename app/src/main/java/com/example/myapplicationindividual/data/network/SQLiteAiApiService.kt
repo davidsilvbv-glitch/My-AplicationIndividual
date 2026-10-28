@@ -1,15 +1,16 @@
 package com.example.myapplicationindividual.data.network
 
 import com.example.myapplicationindividual.data.dto.SQLiteAiQueryResponseDto
-import retrofit2.http.GET
+import com.example.myapplicationindividual.data.dto.SQLiteAiRequestDto
+import retrofit2.http.Body
 import retrofit2.http.Header
-import retrofit2.http.Query
+import retrofit2.http.POST
 
 interface SQLiteAiApiService {
 
-    @GET("v1/webrequest")
-    suspend fun getQueryResults(
+    @POST("v2/weblite/sql")
+    suspend fun executeQuery(
         @Header("Authorization") token: String,
-        @Query("sql") sqlQuery: String = "SELECT * FROM favorites;"
+        @Body body: SQLiteAiRequestDto
     ): SQLiteAiQueryResponseDto
 }
