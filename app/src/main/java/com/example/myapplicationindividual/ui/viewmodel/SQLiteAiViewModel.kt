@@ -1,20 +1,23 @@
 package com.example.myapplicationindividual.ui.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplicationindividual.data.network.RetrofitClient
 import com.example.myapplicationindividual.data.repository.SQLiteAiRepository
 import com.example.myapplicationindividual.domain.model.CloudDatabaseItem
+import com.example.myapplicationindividual.utils.NotificationHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SQLiteAiViewModel(
+    application: Application,
     private val repository: SQLiteAiRepository = SQLiteAiRepository()
-) : ViewModel() {
+) : AndroidViewModel(application) {
 
-    private val _items = MutableStateFlow<List<CloudDatabaseItem>>(kotlin.collections.emptyList())
+    private val _items = MutableStateFlow<List<CloudDatabaseItem>>(emptyList())
     val items: StateFlow<List<CloudDatabaseItem>> = _items.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
@@ -48,10 +51,20 @@ class SQLiteAiViewModel(
                 .onSuccess { cloudItems ->
                     _items.value = cloudItems
                     _isLoading.value = false
+                    NotificationHelper.showNotification(
+                        getApplication(),
+                        "Sincronización Exitosa",
+                        "Se han sincronizado ${cloudItems.size} elementos desde SQLite Cloud."
+                    )
                 }
                 .onFailure { exc ->
                     _isLoading.value = false
                     _error.value = exc.localizedMessage ?: "Error conectando con SQLite.ai Cloud"
+                    NotificationHelper.showNotification(
+                        getApplication(),
+                        "Error de Sincronización",
+                        "No se pudo conectar con SQLite Cloud."
+                    )
                 }
         }
     }
